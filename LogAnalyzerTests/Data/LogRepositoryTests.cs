@@ -85,7 +85,36 @@ namespace LogAnalyzer.Data.Tests
             Assert.AreEqual(4, noUnique);
         }
 
-       
+        [TestMethod()]
+        public void MostVisitedUrlsTestVerifyReturnValues()
+        {
+            //Arrange
+            using var repository = CreateRepository();
+
+            //Act
+            var mostVisited = repository.MostVisitedUrls(3);
+
+            //Assert
+            Assert.AreEqual("/intranet-analytics/", mostVisited[0]);
+            Assert.AreEqual("/faq/how-to-install/", mostVisited[1]);
+            Assert.AreEqual("/blog/2018/08/survey-your-opinion-matters/", mostVisited[2]);
+        }
+
+        [TestMethod()]
+        public void MostActiveIpAddressesTestVerifyReturnValues()
+        {
+            //Arrange
+            using var repository = CreateRepository();
+
+            //Act
+            var mostActive = repository.MostActiveIpAddresses(3);
+
+            //Assert
+            Assert.AreEqual("177.71.128.21", mostActive[0]);
+            Assert.AreEqual("72.44.32.11", mostActive[1]);
+            Assert.AreEqual("168.41.191.9", mostActive[2]);
+
+        }
 
 
     }
