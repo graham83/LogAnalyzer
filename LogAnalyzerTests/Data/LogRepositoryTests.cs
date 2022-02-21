@@ -72,7 +72,21 @@ namespace LogAnalyzer.Data.Tests
             Assert.AreEqual(13, noRecords.Count());
         }
 
+        [TestMethod()]
+        public void GetNumberUniqueIpAddressesTestShouldReturnFour()
+        {
+            //Arrange
+            using var repository = CreateRepository();
+
+            //Act
+            var noUnique = repository.GetNumberUniqueIpAddresses();
+
+            //Assert
+            Assert.AreEqual(4, noUnique);
+        }
+
        
+
 
     }
 }
