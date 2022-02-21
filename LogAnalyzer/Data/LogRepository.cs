@@ -20,6 +20,7 @@ namespace LogAnalyzer.Data
         {
             return logDbContext.LogRecords.ToList();
         }
+
         public void InsertLogRecord(LogRecord record)
         {
             logDbContext.LogRecords.Add(record);
