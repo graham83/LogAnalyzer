@@ -69,7 +69,10 @@ namespace LogAnalyzer.Data.Tests
             var noRecords = repository.GetLogRecords();
 
             //Assert
-            Assert.AreEqual(14, noRecords);
+            Assert.AreEqual(13, noRecords.Count());
         }
+
+       
+
     }
 }
