@@ -13,6 +13,8 @@ namespace LogAnalyzer.Data
         int GetNumberUniqueIpAddresses();
         List<string> MostVisitedUrls(int number);
         List<string> MostActiveIpAddresses(int number);
+        void InsertLogRecord(LogRecord record);
+        void Save();
 
 
     }
