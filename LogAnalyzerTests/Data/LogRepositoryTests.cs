@@ -58,6 +58,18 @@ namespace LogAnalyzer.Data.Tests
 
         public void Dispose() => _connection.Dispose();
 
-       
+
+        [TestMethod()]
+        public void GetLogRecordsTestShouldReturnThirteen()
+        {
+            //Arrange
+            using var repository = CreateRepository();
+
+            //Act
+            var noRecords = repository.GetLogRecords();
+
+            //Assert
+            Assert.AreEqual(14, noRecords);
+        }
     }
 }
