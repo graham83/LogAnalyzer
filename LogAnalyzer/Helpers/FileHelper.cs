@@ -67,6 +67,41 @@ namespace LogAnalyzer.Business
             return false;
         }
 
+        // Returns number of records written to DB
+        // Read one line at a time via stream incase its a large log file
+        public int WriteLogFileToRepository(string path)
+        {
+            var recordsWritten = 0;
+
+            if (!CheckFileExists(path)) return 0;
+
+            using StreamReader reader = new StreamReader(path);
+
+            while (!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+                if (line != null)
+                {
+                    var lineValues = GetLineComponents(line);
+                    if (ReadLineSanityCheck(lineValues))
+                    {
+                        LogRecord? logRecord = ParseLineRaw(lineValues);
+
+                        if (logRecord != null)
+                        {
+                            _logRepository.InsertLogRecord(logRecord);
+                            recordsWritten++;
+                            continue;
+                        }
+                    }
+                    BadLines.Add(line);
+                }
+            }
+
+            _logRepository.Save();
+
+            return recordsWritten;
+        }
 
         private static List<string> GetLineComponents(string line)
         {
