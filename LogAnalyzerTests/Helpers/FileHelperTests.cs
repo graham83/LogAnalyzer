@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using LogAnalyzer.Business;
+using LogAnalyzer.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

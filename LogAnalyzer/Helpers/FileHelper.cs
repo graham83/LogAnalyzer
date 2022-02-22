@@ -8,7 +8,7 @@ using LogAnalyzer.Models;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace LogAnalyzer.Business
+namespace LogAnalyzer.Helpers
 {
     public class FileHelper
     {
