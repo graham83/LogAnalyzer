@@ -118,5 +118,24 @@ namespace LogAnalyzer.Helpers.Tests
 
             Assert.AreEqual(false, badLine);
         }
+
+        [TestMethod()]
+        public void GetNumberUniqueUrlsTestReturnsThree()
+        {
+            //Arrange   
+            var repository = new Mock<ILogRepository>();
+
+            repository.Setup(x => x.GetNumberUniqueIpAddresses())
+                      .Returns(3);
+
+            var helper = new FileHelper(repository.Object);
+
+            //Act
+            var uniqueCount = helper.GetNumberUniqueUrls();
+
+            //Assert
+
+            Assert.AreEqual(3, uniqueCount);
+        }
     }
 }
