@@ -36,7 +36,7 @@ using (var repository = new LogRepository(context))
     // If no command line argument then get user input for file or use default file.
     if (logFilePath == "" || !fileHelper.CheckFileExists(logFilePath))
     {
-        Console.WriteLine("Enter filename or path or return to use default.");
+        Console.WriteLine("Enter filename or path or PRESS ENTER to use default log file.");
         logFilePath = Console.ReadLine();
         if (string.IsNullOrEmpty(logFilePath)) logFilePath = DEFAULT_LOG_FILE;
     }
