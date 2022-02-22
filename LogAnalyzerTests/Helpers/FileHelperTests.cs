@@ -137,5 +137,47 @@ namespace LogAnalyzer.Helpers.Tests
 
             Assert.AreEqual(3, uniqueCount);
         }
+
+        [TestMethod()]
+        public void GetTop3VisitedTestShouldReturnThreeValues()
+        {
+            //Arrange
+            var repository = new Mock<ILogRepository>();
+
+            repository.Setup(x => x.MostVisitedUrls(3))
+                      .Returns(new List<string> { "/intranet-analytics/", "/blog/2018/08/survey-your-opinion-matters/", "/faq/how-to-install/" });
+
+
+            var helper = new FileHelper(repository.Object);
+
+            //Act
+            var top3Visited = helper.GetTop3Visited();
+
+            //Assert
+            Assert.AreEqual(3, top3Visited.Count);
+
+
+        }
+
+        [TestMethod()]
+        public void GetTop3ActiveIpsTestShouldReturnThreeValues()
+        {
+            //Arrange
+            var repository = new Mock<ILogRepository>();
+
+            repository.Setup(x => x.MostActiveIpAddresses(3))
+                      .Returns(new List<string> { "177.71.128.21", "168.41.191.9", "72.44.32.11" });
+
+
+            var helper = new FileHelper(repository.Object);
+
+            //Act
+            var mostActive = helper.GetTop3ActiveIps();
+
+            //Assert
+            Assert.AreEqual(3, mostActive.Count);
+
+
+        }
     }
 }
