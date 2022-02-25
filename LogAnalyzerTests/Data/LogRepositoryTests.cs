@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using LogAnalyzer.Models;
 using Microsoft.Data.Sqlite;
+using LogAnalyzerTests;
 
 namespace LogAnalyzer.Data.Tests
 {
@@ -18,8 +19,12 @@ namespace LogAnalyzer.Data.Tests
         private readonly DbConnection _connection;
         private readonly DbContextOptions<LogDbContext> _contextOptions;
 
+        public string MOST_VISITED_URL = "/intranet-analytics/";
+        public string SECOND_MOST_VISITED_URL = "/faq/how-to-install/";
+        public string THIRD_MOST_VISITED_URL = "/blog/2018/08/survey-your-opinion-matters/";
         public LogRepositoryTests()
         {
+
             // Create and open a connection. This creates the SQLite in-memory database, which will persist until the connection is closed
             // at the end of the test (see Dispose below).
             _connection = new SqliteConnection("Filename=:memory:");
@@ -34,25 +39,11 @@ namespace LogAnalyzer.Data.Tests
             using var context = new LogDbContext(_contextOptions);
 
             context.Database.EnsureCreated();
-
-            context.AddRange(
-              new LogRecord() { SourceIpAddress = "177.71.128.21", HttpAction = "GET", Url = "/intranet-analytics/" },
-               new LogRecord() { SourceIpAddress = "168.41.191.9", HttpAction = "GET", Url = "/intranet-analytics/" },
-               new LogRecord() { SourceIpAddress = "72.44.32.11", HttpAction = "GET", Url = "/intranet-analytics/" },
-               new LogRecord() { SourceIpAddress = "177.71.128.21", HttpAction = "GET", Url = "/blog/2018/08/survey-your-opinion-matters/" },
-               new LogRecord() { SourceIpAddress = "168.41.191.9", HttpAction = "GET", Url = "/blog/2018/08/survey-your-opinion-matters/" },
-               new LogRecord() { SourceIpAddress = "72.44.32.11", HttpAction = "GET", Url = "/faq/how-to-install/" },
-               new LogRecord() { SourceIpAddress = "177.71.128.21", HttpAction = "GET", Url = "/faq/how-to-install/" },
-               new LogRecord() { SourceIpAddress = "168.41.191.9", HttpAction = "GET", Url = "/intranet-analytics/" },
-               new LogRecord() { SourceIpAddress = "72.44.32.11", HttpAction = "GET", Url = "/moved-permanently" },
-               new LogRecord() { SourceIpAddress = "72.44.32.10", HttpAction = "GET", Url = "/moved-temporarily" },
-               new LogRecord() { SourceIpAddress = "177.71.128.21", HttpAction = "GET", Url = "https://intranet/" },
-               new LogRecord() { SourceIpAddress = "177.71.128.21", HttpAction = "GET", Url = "/faq/how-to-install/" },
-               new LogRecord() { SourceIpAddress = "72.44.32.11", HttpAction = "GET", Url = "/home" });
-
-            context.SaveChanges();
+            
+            DbInitialize.Seed(context);
 
         }
+
 
         LogRepository CreateRepository() => new LogRepository(new LogDbContext(_contextOptions));
 
@@ -116,6 +107,78 @@ namespace LogAnalyzer.Data.Tests
 
         }
 
+        [TestMethod()]
+        public void UrlsByCountTestShouldReturnTwoUrls()
+        {
+            //Arrange
+            using var repository = CreateRepository();
 
+            //Act
+            var getUrlsByCount = repository.UrlsByCount(2);
+
+            var expectedReulst = new List<string>
+                {"/blog/2018/08/survey-your-opinion-matters/" };
+
+            //Assert
+            var listCompare = getUrlsByCount.SequenceEqual(expectedReulst);
+
+            Assert.AreEqual(listCompare, true);
+
+
+        }
+
+        [TestMethod()]
+        public void MostVisitedUrlsAndCountTestVerifyReturnTuples()
+        {
+
+            //Arrange
+            using var repository = CreateRepository();
+
+            //Act
+            var mostVisited = repository.MostVisitedUrlsAndCount(3);
+
+            //Assert
+            Assert.AreEqual((MOST_VISITED_URL, 4), mostVisited[0]);
+            Assert.AreEqual((SECOND_MOST_VISITED_URL, 3), mostVisited[1]);
+            Assert.AreEqual((THIRD_MOST_VISITED_URL, 2), mostVisited[2]);
+
+        }
+
+        [TestMethod()]
+        public void MostVisitedUrlsTestDuplicateCounts()
+        {
+            //Arrange
+            using var repository = CreateRepository();
+
+            repository.InsertLogRecord(new LogRecord
+            {
+                SourceIpAddress = "177.71.128.21",
+                HttpAction = "GET",
+                Url = "/home"
+            });
+            repository.Save();
+
+            //Act
+            var mostVisited = repository.MostVisitedUrls(3);
+
+            //Assert
+            Assert.AreEqual("/intranet-analytics/", mostVisited[0]);
+            Assert.AreEqual("/faq/how-to-install/", mostVisited[1]);
+            Assert.AreEqual("/blog/2018/08/survey-your-opinion-matters/", mostVisited[2]);
+        }
+
+        [TestMethod()]
+        public void UrlsByNextFrequencyOccurrenceTestShouldReturnSecondMostVisited()
+        {
+            //Arrange
+            using var repository = CreateRepository();
+
+            //Act
+            var nextMostVisited = repository.UrlsByNextFrequencyOccurrence(4);
+
+            //Assert
+            Assert.AreEqual((SECOND_MOST_VISITED_URL,3), nextMostVisited);
+            
+        }
     }
 }

@@ -60,6 +60,42 @@ namespace LogAnalyzer.Data
            
         }
 
+        public List<(string Url, int Count)> MostVisitedUrlsAndCount(int number)
+        {
+            var topList = logDbContext.LogRecords
+              .GroupBy(i => i.Url)
+              .OrderByDescending(g => g.Count())
+              .Take(number)
+              .Select(g => ValueTuple.Create(g.Key,g.Count()));
+              
+            return topList.ToList();
+        }
+
+        public List<string> UrlsByCount(int number)
+        {
+            var topList = logDbContext.LogRecords
+              .GroupBy(i => i.Url)
+              .Where(g => g.Count() == number)
+               .OrderBy(o => o.Key)
+              .Select(g => g.Key);
+         
+
+            return topList.ToList();
+        }
+
+        public (string Url, int Count) UrlsByNextFrequencyOccurrence(int number)
+        {
+            var topList = logDbContext.LogRecords
+              .GroupBy(i => i.Url)
+              .OrderByDescending(g => g.Count())
+              .Where(g => g.Count() < number)
+              .Select(g => ValueTuple.Create(g.Key, g.Count()))
+              .FirstOrDefault();
+
+            //var nextValue = topList.Select(x => ValueTuple.Create(topList.Key, topList.Count())).FirstOrDefault();
+            return topList;
+        }
+
         private bool disposed = false;
 
         protected virtual void Dispose(bool disposing)
